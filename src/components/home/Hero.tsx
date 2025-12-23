@@ -56,7 +56,7 @@ export const Hero = () => {
                                     className="object-cover object-center"
                                     priority={index === 0}
                                 />
-                                <div className="absolute inset-0 bg-black/40 md:bg-black/40"></div>
+                                <div className="absolute inset-0 bg-black/40 md:bg-black/30"></div>
                             </div>
 
                             {/* Content */}
