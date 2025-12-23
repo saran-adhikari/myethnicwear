@@ -9,13 +9,14 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { CartDrawer } from "./CartDrawer";
 import { WishlistDrawer } from "./WishlistDrawer";
+import { SearchOverlay } from "./SearchOverlay";
 
 const navItems = [
     { name: "Women's Wear", href: "/category/women" },
     { name: "Men's Wear", href: "/category/men" },
-    { name: "Occasion", href: "/occasion" },
-    { name: "Collections", href: "/collections" },
-    { name: "Sale", href: "/sale", highlight: true },
+    { name: "On Sale", href: "/sale" },
+    { name: "Our Collections", href: "/shop" },
+    { name: "Heritage", href: "/about" },
 ];
 
 export const Header = () => {
@@ -23,6 +24,7 @@ export const Header = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
 
     const totalCartItems = useCartStore((state) => state.totalItems());
     const totalWishlistItems = useWishlistStore((state) => state.totalItems());
@@ -70,7 +72,7 @@ export const Header = () => {
                                     href={item.href}
                                     className={cn(
                                         "text-sm font-medium tracking-wide transition-colors hover:text-accent uppercase",
-                                        item.highlight ? "text-accent" : (isScrolled ? "text-charcoal" : "text-white")
+                                        isScrolled ? "text-charcoal" : "text-white"
                                     )}
                                 >
                                     {item.name}
@@ -80,7 +82,10 @@ export const Header = () => {
 
                         {/* Action Icons */}
                         <div className="flex items-center space-x-4 md:space-x-6">
-                            <button className={cn("p-2 hover:text-accent cursor-pointer transition-colors hidden sm:block", isScrolled ? "text-charcoal" : "text-white")}>
+                            <button
+                                className={cn("p-2 hover:text-accent cursor-pointer transition-colors hidden sm:block", isScrolled ? "text-charcoal" : "text-white")}
+                                onClick={() => setIsSearchOpen(true)}
+                            >
                                 <Search size={20} />
                             </button>
                             <button className={cn("p-2 hover:text-accent cursor-pointer transition-colors", isScrolled ? "text-charcoal" : "text-white")}>
@@ -127,7 +132,7 @@ export const Header = () => {
                                     href={item.href}
                                     className={cn(
                                         "text-lg font-medium tracking-wide uppercase",
-                                        item.highlight ? "text-accent" : "text-charcoal"
+                                        "text-charcoal"
                                     )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
@@ -135,6 +140,13 @@ export const Header = () => {
                                 </Link>
                             ))}
                             <div className="pt-6 border-t border-border-light flex flex-col space-y-4">
+                                <button
+                                    onClick={() => { setIsMobileMenuOpen(false); setIsSearchOpen(true); }}
+                                    className="flex items-center space-x-3 text-charcoal hover:text-accent transition-colors"
+                                >
+                                    <Search size={20} />
+                                    <span>Search</span>
+                                </button>
                                 <button
                                     onClick={() => { setIsMobileMenuOpen(false); setIsWishlistOpen(true); }}
                                     className="flex items-center space-x-3 text-charcoal hover:text-accent transition-colors"
@@ -153,6 +165,7 @@ export const Header = () => {
             </header>
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
             <WishlistDrawer isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />
+            <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
         </>
     );
 };

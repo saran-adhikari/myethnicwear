@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Facebook, Instagram, Twitter, Mail, MapPin, Phone } from "lucide-react";
+import { ScrollToTop } from "./scroll-to-top";
 
 export const Footer = () => {
     return (
@@ -85,6 +86,7 @@ export const Footer = () => {
                     </div>
                 </div>
             </div>
+            <ScrollToTop />
         </footer>
     );
 };

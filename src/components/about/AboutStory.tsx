@@ -3,7 +3,7 @@
 export const AboutStory = () => {
     return (
         
-        <section className="relative py-32 bg-gradient-to-b from-amber-50 via-white to-amber-50 overflow-hidden">
+        <section className="relative py-24 bg-gradient-to-b from-amber-50 via-white to-amber-50 overflow-hidden">
             {/* Decorative Elements */}
             <div className="absolute top-0 left-0 w-64 h-64 bg-amber-100 rounded-full blur-3xl opacity-30 -translate-x-1/2 -translate-y-1/2"></div>
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-100 rounded-full blur-3xl opacity-20 translate-x-1/2 translate-y-1/2"></div>
