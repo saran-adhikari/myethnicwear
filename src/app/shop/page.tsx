@@ -22,24 +22,54 @@ const allProducts = [
 ];
 
 import { ShopHero } from "@/components/products/ShopHero";
+import { SortDropdown } from "@/components/products/SortDropdown";
 
 function ShopContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const query = searchParams.get("search");
     const [filteredProducts, setFilteredProducts] = useState(allProducts);
+    const [sortBy, setSortBy] = useState("default");
 
     useEffect(() => {
+        let result = [...allProducts];
+
+        // Filtering
         if (query) {
-            const filtered = allProducts.filter((product) =>
+            result = result.filter((product) =>
                 product.title.toLowerCase().includes(query.toLowerCase()) ||
                 product.category.toLowerCase().includes(query.toLowerCase())
             );
-            setFilteredProducts(filtered);
-        } else {
-            setFilteredProducts(allProducts);
         }
-    }, [query]);
+
+        // Sorting
+        switch (sortBy) {
+            case "price-asc":
+                result.sort((a, b) => {
+                    const priceA = parseFloat(a.price.replace("$", ""));
+                    const priceB = parseFloat(b.price.replace("$", ""));
+                    return priceA - priceB;
+                });
+                break;
+            case "price-desc":
+                result.sort((a, b) => {
+                    const priceA = parseFloat(a.price.replace("$", ""));
+                    const priceB = parseFloat(b.price.replace("$", ""));
+                    return priceB - priceA;
+                });
+                break;
+            case "latest":
+                // For mock data, we'll just reverse or keep as is. 
+                // In a real app, you'd use a 'createdAt' field.
+                result.reverse();
+                break;
+            default:
+                // Default sorting (by ID or original order)
+                break;
+        }
+
+        setFilteredProducts(result);
+    }, [query, sortBy]);
 
     const clearSearch = () => {
         router.push("/shop");
@@ -77,12 +107,7 @@ function ShopContent() {
                                     <button className="p-2 text-charcoal"><Grid size={18} /></button>
                                     <button className="p-2 text-charcoal/30"><ListIcon size={18} /></button>
                                 </div>
-                                <select className="bg-transparent text-xs font-bold uppercase tracking-widest text-charcoal focus:outline-none cursor-pointer">
-                                    <option>Default Sorting</option>
-                                    <option>Price: Low to High</option>
-                                    <option>Price: High to Low</option>
-                                    <option>Latest Arrivals</option>
-                                </select>
+                                <SortDropdown onSortChange={setSortBy} />
                             </div>
                         </div>
 
