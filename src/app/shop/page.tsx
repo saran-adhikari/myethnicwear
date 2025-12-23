@@ -21,6 +21,8 @@ const allProducts = [
     { id: "8", title: "Bridal Saree", price: "$550.00", category: "Sarees", image: "/hero1.png" },
 ];
 
+import { ShopHero } from "@/components/products/ShopHero";
+
 function ShopContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
@@ -45,34 +47,11 @@ function ShopContent() {
 
     return (
         <>
-            <div className="pt-24 pb-12 bg-primary/20 mt-16">
-                <div className="container mx-auto px-4 md:px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="text-center"
-                    >
-                        <h1 className="text-4xl md:text-5xl font-serif font-bold text-charcoal mb-4">
-                            {query ? `Search Results for "${query}"` : "Our Collections"}
-                        </h1>
-                        <p className="text-charcoal/60 text-sm max-w-lg mx-auto leading-relaxed">
-                            {query
-                                ? `Showing ${filteredProducts.length} items for your search.`
-                                : "Explore our wide range of traditional ethnic wear, meticulously handcrafted for the modern enthusiast."
-                            }
-                        </p>
-                        {query && (
-                            <button
-                                onClick={clearSearch}
-                                className="mt-4 inline-flex items-center space-x-2 text-xs font-bold uppercase tracking-widest text-accent hover:text-charcoal transition-colors border-b border-accent pb-1"
-                            >
-                                <X size={14} />
-                                <span>Clear Search</span>
-                            </button>
-                        )}
-                    </motion.div>
-                </div>
-            </div>
+            <ShopHero
+                query={query}
+                totalResults={filteredProducts.length}
+                onClearSearch={clearSearch}
+            />
 
             <div className="container mx-auto px-4 md:px-6 py-12">
                 <div className="flex flex-col lg:flex-row gap-12">
