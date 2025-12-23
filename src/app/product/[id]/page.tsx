@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import { Heart, ShoppingBag, Share2, Ruler, ShieldCheck, RefreshCw, Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/store/cartStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { SizeGuide } from "@/components/products/SizeGuide";
 
 const product = {
@@ -33,11 +34,29 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
     const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
-    const addItem = useCartStore((state) => state.addItem);
+
+    const addItemToCart = useCartStore((state) => state.addItem);
+    const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+
+    const isWishlisted = isInWishlist(product.id);
 
     const handleAddToCart = () => {
         for (let i = 0; i < quantity; i++) {
-            addItem({
+            addItemToCart({
+                id: product.id,
+                title: product.title,
+                price: parseFloat(product.price.replace("$", "")),
+                image: product.images[0],
+                category: product.category,
+            });
+        }
+    };
+
+    const handleWishlist = () => {
+        if (isWishlisted) {
+            removeFromWishlist(product.id);
+        } else {
+            addToWishlist({
                 id: product.id,
                 title: product.title,
                 price: parseFloat(product.price.replace("$", "")),
@@ -133,8 +152,14 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                                         <ShoppingBag size={20} />
                                         <span>Add to Bag</span>
                                     </button>
-                                    <button className="p-5 border border-border-light hover:border-accent hover:text-accent transition-all">
-                                        <Heart size={20} />
+                                    <button
+                                        onClick={handleWishlist}
+                                        className={cn(
+                                            "p-5 border border-border-light hover:border-accent hover:text-accent transition-all",
+                                            isWishlisted && "text-secondary border-secondary fill-secondary"
+                                        )}
+                                    >
+                                        <Heart size={20} className={cn(isWishlisted && "fill-current")} />
                                     </button>
                                     <button className="p-5 border border-border-light hover:border-accent hover:text-accent transition-all">
                                         <Share2 size={20} />

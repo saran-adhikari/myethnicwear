@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ShoppingCart, Heart, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCartStore } from "@/lib/store/cartStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
+import { cn } from "@/lib/utils";
 
 interface ProductCardProps {
     id: string;
@@ -16,17 +18,35 @@ interface ProductCardProps {
 }
 
 export const ProductCard = ({ id, title, price, category, image }: ProductCardProps) => {
-    const addItem = useCartStore((state) => state.addItem);
+    const addItemToCart = useCartStore((state) => state.addItem);
+    const { addItem: addToWishlist, removeItem: removeFromWishlist, isInWishlist } = useWishlistStore();
+
+    const isWishlisted = isInWishlist(id);
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.preventDefault();
-        addItem({
+        addItemToCart({
             id,
             title,
             price: parseFloat(price.replace("$", "")),
             image,
             category,
         });
+    };
+
+    const handleWishlist = (e: React.MouseEvent) => {
+        e.preventDefault();
+        if (isWishlisted) {
+            removeFromWishlist(id);
+        } else {
+            addToWishlist({
+                id,
+                title,
+                price: parseFloat(price.replace("$", "")),
+                image,
+                category,
+            });
+        }
     };
 
     return (
@@ -46,8 +66,14 @@ export const ProductCard = ({ id, title, price, category, image }: ProductCardPr
 
                 {/* Hover Actions */}
                 <div className="absolute inset-x-0 bottom-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex justify-center space-x-2">
-                    <button className="bg-white p-3 text-charcoal hover:bg-accent hover:text-white transition-all shadow-soft group/btn">
-                        <Heart size={18} />
+                    <button
+                        className={cn(
+                            "p-3 transition-all shadow-soft group/btn",
+                            isWishlisted ? "bg-secondary text-white" : "bg-white text-charcoal hover:bg-accent hover:text-white"
+                        )}
+                        onClick={handleWishlist}
+                    >
+                        <Heart size={18} className={cn(isWishlisted && "fill-current")} />
                     </button>
                     <button
                         className="bg-accent px-6 py-3 text-white flex items-center space-x-2 text-xs font-semibold tracking-wider uppercase hover:bg-charcoal transition-all shadow-soft"

@@ -6,7 +6,9 @@ import { Search, ShoppingCart, Heart, User, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCartStore } from "@/lib/store/cartStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { CartDrawer } from "./CartDrawer";
+import { WishlistDrawer } from "./WishlistDrawer";
 
 const navItems = [
     { name: "Women's Wear", href: "/category/women" },
@@ -20,7 +22,10 @@ export const Header = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
-    const totalItems = useCartStore((state) => state.totalItems());
+    const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+
+    const totalCartItems = useCartStore((state) => state.totalItems());
+    const totalWishlistItems = useWishlistStore((state) => state.totalItems());
 
     useEffect(() => {
         const handleScroll = () => {
@@ -44,7 +49,7 @@ export const Header = () => {
                     <div className="flex items-center justify-between">
                         {/* Mobile Menu Button */}
                         <button
-                            className="md:hidden p-2 text-charcoal"
+                            className={cn("md:hidden p-2 transition-colors", isScrolled ? "text-charcoal" : "text-white")}
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         >
                             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -52,7 +57,7 @@ export const Header = () => {
 
                         {/* Logo */}
                         <Link href="/" className="flex items-center space-x-2">
-                            <span className={cn("text-2xl md:text-3xl font-serif font-bold text-charcoal tracking-tight", isScrolled ? "text-charcoal" : "text-white")}>
+                            <span className={cn("text-2xl md:text-3xl font-serif font-bold tracking-tight transition-colors", isScrolled ? "text-charcoal" : "text-white")}>
                                 MyEthnic<span className="text-accent">Wear</span>
                             </span>
                         </Link>
@@ -65,8 +70,7 @@ export const Header = () => {
                                     href={item.href}
                                     className={cn(
                                         "text-sm font-medium tracking-wide transition-colors hover:text-accent uppercase",
-                                        item.highlight ? "text-primary" : "text-white",
-                                        isScrolled ? "text-black" : "text-white"
+                                        item.highlight ? "text-accent" : (isScrolled ? "text-charcoal" : "text-white")
                                     )}
                                 >
                                     {item.name}
@@ -76,24 +80,31 @@ export const Header = () => {
 
                         {/* Action Icons */}
                         <div className="flex items-center space-x-4 md:space-x-6">
-                            <button className={cn("p-2 text-charcoal hover:text-accent cursor-pointer transition-colors hidden sm:block", isScrolled ? "text-black" : "text-white")}>
+                            <button className={cn("p-2 hover:text-accent cursor-pointer transition-colors hidden sm:block", isScrolled ? "text-charcoal" : "text-white")}>
                                 <Search size={20} />
                             </button>
-                            <button className={cn("p-2 text-charcoal hover:text-accent cursor-pointer transition-colors", isScrolled ? "text-black" : "text-white")}>
+                            <button className={cn("p-2 hover:text-accent cursor-pointer transition-colors", isScrolled ? "text-charcoal" : "text-white")}>
                                 <User size={20} />
                             </button>
-                            <button className={cn("p-2 text-charcoal hover:text-accent cursor-pointer transition-colors relative", isScrolled ? "text-black" : "text-white")}>
-                                <Heart size={20} />
-                                <span className={cn("absolute top-0 right-0 w-2 h-2 bg-secondary rounded-full", isScrolled ? "text-black" : "text-white")}></span>
+                            <button
+                                className={cn("p-2 hover:text-accent cursor-pointer transition-colors relative", isScrolled ? "text-charcoal" : "text-white")}
+                                onClick={() => setIsWishlistOpen(true)}
+                            >
+                                <Heart size={20} className={cn(totalWishlistItems > 0 && "fill-secondary text-secondary")} />
+                                {totalWishlistItems > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-secondary text-[10px] text-white rounded-full">
+                                        {totalWishlistItems}
+                                    </span>
+                                )}
                             </button>
                             <button
-                                className={cn("p-2 text-charcoal hover:text-accent cursor-pointer transition-colors relative", isScrolled ? "text-black" : "text-white")}
+                                className={cn("p-2 hover:text-accent cursor-pointer transition-colors relative", isScrolled ? "text-charcoal" : "text-white")}
                                 onClick={() => setIsCartOpen(true)}
                             >
                                 <ShoppingCart size={20} />
-                                {totalItems > 0 && (
-                                    <span className={cn("absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-accent text-[10px] text-white rounded-full", isScrolled ? "text-black" : "text-white")}>
-                                        {totalItems}
+                                {totalCartItems > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 bg-accent text-[10px] text-white rounded-full">
+                                        {totalCartItems}
                                     </span>
                                 )}
                             </button>
@@ -116,7 +127,7 @@ export const Header = () => {
                                     href={item.href}
                                     className={cn(
                                         "text-lg font-medium tracking-wide uppercase",
-                                        item.highlight ? "text-secondary" : "text-charcoal"
+                                        item.highlight ? "text-accent" : "text-charcoal"
                                     )}
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
@@ -124,11 +135,14 @@ export const Header = () => {
                                 </Link>
                             ))}
                             <div className="pt-6 border-t border-border-light flex flex-col space-y-4">
-                                <Link href="/wishlist" className="flex items-center space-x-3 text-charcoal">
+                                <button
+                                    onClick={() => { setIsMobileMenuOpen(false); setIsWishlistOpen(true); }}
+                                    className="flex items-center space-x-3 text-charcoal hover:text-accent transition-colors"
+                                >
                                     <Heart size={20} />
                                     <span>Wishlist</span>
-                                </Link>
-                                <Link href="/profile" className="flex items-center space-x-3 text-charcoal">
+                                </button>
+                                <Link href="/profile" className="flex items-center space-x-3 text-charcoal hover:text-accent transition-colors">
                                     <User size={20} />
                                     <span>My Account</span>
                                 </Link>
@@ -138,6 +152,7 @@ export const Header = () => {
                 </AnimatePresence>
             </header>
             <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+            <WishlistDrawer isOpen={isWishlistOpen} onClose={() => setIsWishlistOpen(false)} />
         </>
     );
 };
