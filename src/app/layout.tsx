@@ -4,7 +4,7 @@ import "./globals.css";
 import { NewsletterPopup } from "@/components/ui/NewsletterPopup";
 
 export const metadata: Metadata = {
-  title: "MyEthnicWear.com - Traditional Fashion, Modern Elegance",
+  title: "MyEthnicWear - Traditional Fashion, Modern Elegance",
   description: "Sophisticated online ethnic wear boutique celebrating traditional fashion with a modern shopping experience.",
 };
 
